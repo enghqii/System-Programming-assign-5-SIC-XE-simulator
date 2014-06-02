@@ -1,3 +1,4 @@
+package simulator.interfaces;
 
 public interface ResourceManager {
 

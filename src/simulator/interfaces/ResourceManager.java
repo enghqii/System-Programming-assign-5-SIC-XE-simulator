@@ -9,7 +9,7 @@ public interface ResourceManager {
 	public void 	writeDevice(String devName, byte[] data);
 	public byte[] 	readDevice(String devName, int size);
 	
-	public void		setMemory(int locate, byte[] data, int size);
+	public void		setMemory(int locate, byte[] data);
 	public byte[]	getMemory(int locate, int size);
 	
 	public void		setRegister(int regNum, int value);

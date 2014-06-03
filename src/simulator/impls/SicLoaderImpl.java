@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -13,6 +14,14 @@ import simulator.interfaces.SicLoader;
 
 public class SicLoaderImpl implements SicLoader {
 
+	private class ModRecord {
+		public int 		addr 		= 0;
+		public int 		offset 		= 0;
+		public boolean 	flag 		= true; // true for '+', false for '-'
+		public String 	symbol 		= "";
+	}
+
+	private ArrayList<ModRecord> modRecords = null;
 	private Map<String, Integer> symbolTable = null;
 
 	public SicLoaderImpl() {
@@ -25,8 +34,10 @@ public class SicLoaderImpl implements SicLoader {
 		try {
 
 			int sectionOffset = 0;
-
+			
+			modRecords = new ArrayList<ModRecord>();
 			symbolTable = new TreeMap<String, Integer>();
+			
 			BufferedReader objReader = new BufferedReader(new FileReader(objFile));
 			
 			int sectionSize = 0;
@@ -44,9 +55,11 @@ public class SicLoaderImpl implements SicLoader {
 				switch (line.charAt(0)) {
 				
 				case 'H': {
+					
 					// get section name (symbol), start addr (and actual addr),
 					// section size
 					String sectionName = line.substring(1, 1 + 6);
+					sectionName = sectionName.replaceAll("\\s+",""); // remove white spaces
 
 					String startAddrStr = line.substring(7, 7 + 6);
 					int startAddr = Integer.parseInt(startAddrStr, 16);
@@ -102,6 +115,28 @@ public class SicLoaderImpl implements SicLoader {
 					rMgr.setMemory(sectionOffset + recordStartAddr, record);
 				}
 					break;
+					
+				case 'M' : {
+					ModRecord record = new ModRecord();
+					
+					String 	addrStr = line.substring(1, 7);
+					int 	addr = Integer.parseInt(addrStr, 16);
+					
+					String offsetStr = line.substring(7, 9);
+					int offset = Integer.parseInt(offsetStr, 16);
+					
+					if(line.charAt(9) == '+')
+						record.flag = true;
+					else if(line.charAt(9) == '-')
+						record.flag = false;
+					
+					record.addr = sectionOffset + addr;
+					record.offset = offset;
+					record.symbol = line.substring(10).replaceAll("\\s+","");
+					
+					this.modRecords.add(record);
+				}
+					break;
 
 				case 'E' : {
 					sectionOffset += sectionSize;
@@ -115,6 +150,13 @@ public class SicLoaderImpl implements SicLoader {
 			}
 
 			objReader.close();
+			
+			for(ModRecord record : modRecords){
+				System.out.println(String.format("%06X %02X %c %s %s", record.addr, record.offset, record.flag?'+':'-', record.symbol, symbolTable.containsKey(record.symbol)));
+				
+				int val = symbolTable.get(record.symbol);
+			}
+			modRecords.clear();
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -16,7 +17,7 @@ public class SicLoaderImpl implements SicLoader {
 
 	private class ModRecord {
 		public int 		addr 		= 0;
-		public int 		offset 		= 0;
+		public int 		offset 		= 0;	//Length of the filed to be modified
 		public boolean 	flag 		= true; // true for '+', false for '-'
 		public String 	symbol 		= "";
 	}
@@ -154,7 +155,22 @@ public class SicLoaderImpl implements SicLoader {
 			for(ModRecord record : modRecords){
 				System.out.println(String.format("%06X %02X %c %s %s", record.addr, record.offset, record.flag?'+':'-', record.symbol, symbolTable.containsKey(record.symbol)));
 				
-				int val = symbolTable.get(record.symbol);
+				int size = (int)Math.ceil(record.offset / 2.0f);
+				
+				int 	val = symbolTable.get(record.symbol);
+				byte[] 	valByte = ByteBuffer.allocate(4).putInt(val).array();
+				
+				byte[] 	buf = rMgr.getMemory(record.addr, size);
+				
+				for(int i = 1; i <= size; i++){
+					if(record.flag == true)
+						buf[buf.length - i] += valByte[valByte.length - i];
+					else
+						buf[buf.length - i] -= valByte[valByte.length - i];
+				}
+				
+				System.out.println(buf);
+				rMgr.setMemory(record.addr, buf);
 			}
 			modRecords.clear();
 

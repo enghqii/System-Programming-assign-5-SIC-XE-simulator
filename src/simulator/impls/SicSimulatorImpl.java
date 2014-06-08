@@ -11,7 +11,6 @@ import util.Pair;
 public class SicSimulatorImpl implements SicSimulator {
 	
 	private ResourceManager rmgr = null;
-	//private int 			PC = 0; not gonna use this PC
 	
 	private Map<Byte, Pair<Integer, OperatorTypeAll>> opTable = null;
 
@@ -43,6 +42,7 @@ public class SicSimulatorImpl implements SicSimulator {
 		opTable.put((byte) 0xB4, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));
 		opTable.put((byte) 0xA0, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));
 		opTable.put((byte) 0xB8, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));
+		
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class SicSimulatorImpl implements SicSimulator {
 		
 		// set PC zero
 		//this.PC = 0;//0x1033;
-		rmgr.setRegister(8, 0);
+		rmgr.setRegister(8, 0x1033);
 		
 		rmgr.setRegister(2, -1); // LDL -1
 	}
@@ -79,19 +79,27 @@ public class SicSimulatorImpl implements SicSimulator {
 		// AND, go to next step - 이거 사이즈 계산 하고 나서 바로 해야하는거 아님?
 		//PC = PC + size;
 		rmgr.setRegister(8, rmgr.getRegister(8) + size);
-		
-		
+
 		// Do step
-		switch(size){
+		switch (size) {
 		case 1:
 			// do op
 			break;
-		case 2:
+		case 2: {
 			// get r1, r2
+
+			int r1 = (op[1] >> 4);
+			int r2 = (op[1] & 0x0F);
+
+			OperatorType2 operator = (OperatorType2) opTable.get(opcode).getSecond();
+			operator.operate(rmgr, r1, r2);
+
 			break;
-		case 3:
+		}
+
+		case 3: {
 			// get disp, nixvbpe.
-			
+
 			NIXBPE nixbpe = new NIXBPE();
 
 			nixbpe.n = ((op[0] & 0x02) != 0 ? true : false);
@@ -105,25 +113,26 @@ public class SicSimulatorImpl implements SicSimulator {
 			int disp = 0;
 			disp |= ((op[1] & 0x0F) << 8);
 			disp |= ((op[2] & 0xFF) << 0);
-			
+
 			// 이제 명령어랑 어드레싱 모드, 피연산자(disp)까지 얻음.
-			
+
 			int targetAddr = disp;
-			
-			if(nixbpe.x){
+
+			if (nixbpe.x) {
 				targetAddr += rmgr.getRegister(1);
-			}		
-			if(nixbpe.b){
+			}
+			if (nixbpe.b) {
 				targetAddr += rmgr.getRegister(3);
 			}
-			if(nixbpe.p){
+			if (nixbpe.p) {
 				targetAddr += rmgr.getRegister(8);
 			}
-			
+
 			OperatorType3 operator = (OperatorType3) opTable.get(opcode).getSecond();
 			operator.operate(rmgr, nixbpe, disp, targetAddr);
 
 			break;
+		}
 		case 4:
 			// get disp, nixbpe.
 			break;

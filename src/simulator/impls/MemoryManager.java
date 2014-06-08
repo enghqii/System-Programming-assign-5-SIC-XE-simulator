@@ -92,5 +92,9 @@ public class MemoryManager implements ResourceManager {
 		int val = registers[regNum];
 		return val;
 	}
+	
+	public String[] getDeviceList(){
+		return deviceMap.keySet().toArray(new String[0]);
+	}
 
 }

@@ -13,6 +13,8 @@ public class SicSimulatorImpl implements SicSimulator {
 	private ResourceManager rmgr = null;
 	
 	private Map<Byte, Pair<Integer, OperatorTypeAll>> opTable = null;
+	
+	private byte[] op = null;
 
 	public SicSimulatorImpl() {
 		
@@ -63,7 +65,7 @@ public class SicSimulatorImpl implements SicSimulator {
 		// if (PC == -1) exit;
 		
 		// get opcode
-		byte[] op = rmgr.getMemory(rmgr.getRegister(8), 2);
+		op = rmgr.getMemory(rmgr.getRegister(8), 2);
 		byte opcode = (byte) (op[0] & 0xFC); // n,i ¹ö¸².
 
 		// get size
@@ -188,6 +190,10 @@ public class SicSimulatorImpl implements SicSimulator {
 		while(rmgr.getRegister(8) != -1){
 			oneStep();
 		}
+	}
+	
+	public byte[] getOp(){
+		return op;
 	}
 
 }

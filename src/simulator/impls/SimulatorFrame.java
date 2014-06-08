@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -28,6 +29,7 @@ public class SimulatorFrame extends JFrame implements VisualSimulator {
 	
 	private JTextArea ProgramInfo;
 	private JTextArea RegisterInfo;
+	private JTextArea opInfo;
 
 	public SimulatorFrame() throws HeadlessException {
 
@@ -112,14 +114,25 @@ public class SimulatorFrame extends JFrame implements VisualSimulator {
 			public void actionPerformed(ActionEvent e) {
 				//allStep();
 				initialize(objFile, rmgr);
+				opInfo.setText("");
 			}
 		});
 		this.add(abortBtn);
 		
 		{
 			RegisterInfo = new JTextArea();
+			RegisterInfo.setEditable(false);
 			RegisterInfo.setBounds(10, 190, 350, 70);
 			this.add(RegisterInfo);
+		}
+		
+		{
+			opInfo = new JTextArea();
+			opInfo.setEditable(false);
+			opInfo.setLineWrap(true);
+			JScrollPane pane = new JScrollPane(opInfo);
+			pane.setBounds(10, 290, 350, 73*2);
+			this.add(pane);
 		}
 		
 	}
@@ -150,12 +163,14 @@ public class SimulatorFrame extends JFrame implements VisualSimulator {
 			simulator.oneStep();
 		}
 		updateRegisterInfo();
+		updateOpInfo();
 	}
 
 	@Override
 	public void allStep() {
 		simulator.allStep();
 		updateRegisterInfo();
+		updateOpInfo();
 	}
 	
 	private void updateRegisterInfo(){
@@ -173,6 +188,33 @@ public class SimulatorFrame extends JFrame implements VisualSimulator {
 		info += "SW : " + String.format("%06X",rmgr.getRegister(9)) + " | \n";
 		
 		RegisterInfo.setText(info);
+	}
+
+	private void updateOpInfo() {
+
+		int pc = rmgr.getRegister(8);
+		byte[] mem0 = rmgr.getMemory(Math.max(pc - 32, 0), 32);
+		byte[] mem1 = rmgr.getMemory(Math.max(pc, 0), 4);
+		byte[] mem2 = rmgr.getMemory(Math.max(pc + 4, 0), 32);
+		
+		String memStr = "";
+		
+		for(byte b : mem0){
+			memStr += String.format("%02X", b);
+		}
+		
+		memStr += "\n\nPC -> ";
+		
+		for(byte b : mem1){
+			memStr += String.format("%02X", b);
+		}
+		
+		memStr += "\n\n";
+		for(byte b : mem2){
+			memStr += String.format("%02X", b);
+		}
+
+		opInfo.setText(memStr);
 	}
 
 }

@@ -1,10 +1,16 @@
 package simulator.impls;
 
-import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import simulator.interfaces.ResourceManager;
 import simulator.interfaces.VisualSimulator;
@@ -12,42 +18,161 @@ import simulator.interfaces.VisualSimulator;
 public class SimulatorFrame extends JFrame implements VisualSimulator {
 
 	private static final long serialVersionUID = 626819653852183458L;
+	
+	private File objFile = null;
+
+	private JFileChooser 	fileChooser 	= new JFileChooser();
+	private ResourceManager rmgr 			= new MemoryManager();
+	private SicLoaderImpl 		loader 			= new SicLoaderImpl();
+	private SicSimulatorImpl 	simulator 		= new SicSimulatorImpl();
+	
+	private JTextArea ProgramInfo;
+	private JTextArea RegisterInfo;
 
 	public SimulatorFrame() throws HeadlessException {
-		// TODO Auto-generated constructor stub
+
+		this.setSize(400, 500);
+
+		this.setTitle("SIC/XE simulator");
+		this.setResizable(false);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		initUI();
 	}
 
-	public SimulatorFrame(GraphicsConfiguration arg0) {
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
+	private void initUI() {
+		setLayout(null);
 
-	public SimulatorFrame(String arg0) throws HeadlessException {
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
+		{
+			JLabel filename = new JLabel("file name : ");
+			filename.setBounds(10, 10, 100, 25);
+			this.add(filename);
 
-	public SimulatorFrame(String arg0, GraphicsConfiguration arg1) {
-		super(arg0, arg1);
-		// TODO Auto-generated constructor stub
+			final JTextField fileField = new JTextField();
+			fileField.setBounds(100 - 10, 10, 150, 25);
+			this.add(fileField);
+
+			JButton fileOpen = new JButton("open");
+			fileOpen.setBounds(250, 10, 65, 25);
+
+			fileOpen.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+
+					int result = fileChooser
+							.showOpenDialog(SimulatorFrame.this);
+
+					if (result == JFileChooser.APPROVE_OPTION) {
+
+						File selectedFile = fileChooser.getSelectedFile();
+						fileField.setText(""+selectedFile);
+						initialize(selectedFile, rmgr);
+					}
+
+				}
+			});
+			this.add(fileOpen);
+		}
+
+		{
+			ProgramInfo = new JTextArea();
+			ProgramInfo.setBounds(10, 60, 350, 70);
+			ProgramInfo.setEditable(false);
+			this.add(ProgramInfo);
+		}
+		
+		JButton oneStepBtn = new JButton("oneStep");
+		oneStepBtn.setBounds(10, 140, 100, 25);
+		oneStepBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				oneStep();
+			}
+		});
+		this.add(oneStepBtn);
+		
+		JButton allStepBtn = new JButton("AllStep");
+		allStepBtn.setBounds(135, 140, 100, 25);
+		allStepBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				allStep();
+			}
+		});
+		this.add(allStepBtn);
+		
+		JButton abortBtn = new JButton("abort");
+		abortBtn.setBounds(260, 140, 100, 25);
+		abortBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//allStep();
+				initialize(objFile, rmgr);
+			}
+		});
+		this.add(abortBtn);
+		
+		{
+			RegisterInfo = new JTextArea();
+			RegisterInfo.setBounds(10, 190, 350, 70);
+			this.add(RegisterInfo);
+		}
+		
 	}
 
 	@Override
 	public void initialize(File objFile, ResourceManager rMgr) {
-		// TODO Auto-generated method stub
+		
+		this.objFile = objFile;
 
+		loader.load(objFile, rmgr);
+		System.out.println(">>Load done.");
+
+		simulator.initialize(objFile, rmgr);
+		System.out.println(">>Simulator initialised.");
+
+		{
+			String info = "Program Name : " + loader.getProgramName() + "\n";
+			info += "Start Addr : " + loader.getStartAddr() + "\n";
+			info += "Size : " + loader.getSectionSize();
+			ProgramInfo.setText(info);
+		}
+		updateRegisterInfo();
 	}
 
 	@Override
 	public void oneStep() {
-		// TODO Auto-generated method stub
-
+		if (rmgr.getRegister(8) != -1){
+			simulator.oneStep();
+		}
+		updateRegisterInfo();
 	}
 
 	@Override
 	public void allStep() {
-		// TODO Auto-generated method stub
-
+		simulator.allStep();
+		updateRegisterInfo();
+	}
+	
+	private void updateRegisterInfo(){
+		
+		String info = "";
+		
+		info += "A : " + String.format("%06X",rmgr.getRegister(0)) + " | ";
+		info += "X : " + String.format("%06X",rmgr.getRegister(1)) + " | ";
+		info += "L : " + String.format("%06X",rmgr.getRegister(2)) + " | \n";
+		info += "B : " + String.format("%06X",rmgr.getRegister(3)) + " | ";
+		info += "S : " + String.format("%06X",rmgr.getRegister(4)) + " | ";
+		info += "T : " + String.format("%06X",rmgr.getRegister(5)) + " | \n";
+		info += "F : " + String.format("%06X",rmgr.getRegister(6)) + " | ";
+		info += "PC : " + String.format("%06X",rmgr.getRegister(8)) + " | ";
+		info += "SW : " + String.format("%06X",rmgr.getRegister(9)) + " | \n";
+		
+		RegisterInfo.setText(info);
 	}
 
 }

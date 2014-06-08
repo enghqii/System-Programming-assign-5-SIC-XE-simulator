@@ -24,6 +24,10 @@ public class SicLoaderImpl implements SicLoader {
 
 	private ArrayList<ModRecord> modRecords = null;
 	private Map<String, Integer> symbolTable = null;
+	
+	private String programName = null;
+	private int startAddr = 0;
+	private int sectionSize = 0;
 
 	public SicLoaderImpl() {
 
@@ -69,6 +73,13 @@ public class SicLoaderImpl implements SicLoader {
 					sectionSize = Integer.parseInt(sectionSizeStr, 16);
 
 					symbolTable.put(sectionName, sectionOffset + startAddr);
+					
+					if(programName == null){
+						this.programName = sectionName;
+						this.startAddr = startAddr;
+						this.sectionSize = sectionSize;
+					}
+					
 				}
 					break;
 
@@ -180,5 +191,16 @@ public class SicLoaderImpl implements SicLoader {
 			e.printStackTrace();
 		}
 	}
+	
+	public String getProgramName(){
+		return this.programName;
+	}
+	
+	public int getStartAddr(){
+		return this.startAddr;
+	}
 
+	public int getSectionSize(){
+		return this.sectionSize;
+	}
 }

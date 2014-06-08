@@ -82,9 +82,11 @@ class TD implements OperatorType3{
 			int targetAddr) {
 		
 		// read a byte
-		Byte dev = rmgr.getMemory(targetAddr, 1)[0];
+		byte dev = rmgr.getMemory(targetAddr, 1)[0];
 		
-		rmgr.initialDevice(dev.toString());
+		String devName = String.format("%02X", dev);
+		
+		rmgr.initialDevice(devName);
 		rmgr.setRegister(9, 1);
 	}
 	
@@ -111,9 +113,10 @@ class RD implements OperatorType3{
 	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
 			int targetAddr) {
 		// 바이트 하나 읽어서 A에 저장.
-		Byte dev = rmgr.getMemory(targetAddr, 1)[0];
-		
-		byte data = rmgr.readDevice(dev.toString(), 1)[0];
+		byte dev = rmgr.getMemory(targetAddr, 1)[0];
+
+		String devName = String.format("%02X", dev);
+		byte data = rmgr.readDevice(devName, 1)[0];
 		
 		rmgr.setRegister(0, data);
 	}
@@ -348,10 +351,11 @@ class WD implements OperatorType3{
 		byte[] data = new byte[1]; 
 		data[0] = (byte) rmgr.getRegister(0);
 		
-		Byte dev = rmgr.getMemory(targetAddr, 1)[0];
+		byte dev = rmgr.getMemory(targetAddr, 1)[0];
 
+		String devName = String.format("%02X", dev);
 		//byte data = rmgr.readDevice(dev.toString(), 1)[0];
-		rmgr.writeDevice(dev.toString(), data);
+		rmgr.writeDevice(devName, data);
 	}
 
 }

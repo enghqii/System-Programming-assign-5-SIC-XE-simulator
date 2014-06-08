@@ -1,26 +1,22 @@
-import java.io.File;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
-import simulator.impls.MemoryManager;
-import simulator.impls.SicLoaderImpl;
-import simulator.impls.SicSimulatorImpl;
-import simulator.interfaces.ResourceManager;
-import simulator.interfaces.SicLoader;
-import simulator.interfaces.SicSimulator;
-
+import simulator.impls.SimulatorFrame;
 
 public class SimulatorMain {
 	
 	public static void main(String[] args) {
 		
-		File objFile = new File("obj.txt");
-		ResourceManager rmgr = new MemoryManager();
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			// UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
 		
-		SicLoader loader = new SicLoaderImpl();
-		loader.load(objFile, rmgr);
-		
-		SicSimulator simulator = new SicSimulatorImpl();
-		simulator.initialize(objFile, rmgr);
-		simulator.allStep();
+		SimulatorFrame vSim = new SimulatorFrame();
+		vSim.setVisible(true);
 	}
 
 }

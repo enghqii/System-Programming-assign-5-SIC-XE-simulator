@@ -119,6 +119,63 @@ class RD implements OperatorType3{
 	
 }
 
+class STCH implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+
+		byte[] ch = new byte[1];
+		ch[0] = (byte) rmgr.getRegister(0);
+
+		rmgr.setMemory(targetAddr, ch);
+	}
+
+}
+
+class JLT implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		
+		// less than
+		if(rmgr.getRegister(9) < 0){
+			rmgr.setRegister(8, targetAddr);
+		}
+	}
+	
+}
+
+class STX implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		// x의 값을 targetAddr에
+		int val = rmgr.getRegister(1);
+		byte[] tmpArr = ByteBuffer.allocate(4).putInt(val).array();
+
+		// 상위 1바이트 절삭
+		byte[] valArr = new byte[3];
+		System.arraycopy(tmpArr, 1, valArr, 0, valArr.length);
+
+		rmgr.setMemory(targetAddr, valArr);
+	}
+	
+}
+
+class RSUB implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		int retAddr = rmgr.getRegister(2);
+		rmgr.setRegister(8, retAddr);
+	}
+	
+}
+
 class CLEAR implements OperatorType2 {
 
 	@Override
@@ -138,6 +195,27 @@ class COMPR implements OperatorType2 {
 		if (v1 == v2) {
 			rmgr.setRegister(9, 0);
 		} else if (v1 < v2){
+			rmgr.setRegister(9, -1);
+		} else {
+			rmgr.setRegister(9, +1);
+		}
+	}
+	
+}
+
+class TIXR implements OperatorType2{
+
+	@Override
+	public void operate(ResourceManager rmgr, int r1, int r2) {
+		// x = x + 1;
+		rmgr.setRegister(1, rmgr.getRegister(1) + 1);
+		
+		int v1 = rmgr.getRegister(r1);
+		int X = rmgr.getRegister(1);
+		
+		if (v1 == X) {
+			rmgr.setRegister(9, 0);
+		} else if (v1 < X){
 			rmgr.setRegister(9, -1);
 		} else {
 			rmgr.setRegister(9, +1);

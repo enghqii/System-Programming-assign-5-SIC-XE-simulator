@@ -27,21 +27,21 @@ public class SicSimulatorImpl implements SicSimulator {
 		opTable.put((byte) 0x3C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x0C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x08, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x4C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x4C, new Pair<Integer, OperatorTypeAll>(3,new RSUB()));
 		opTable.put((byte) 0x04, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0xE0, new Pair<Integer, OperatorTypeAll>(3,new TD()));
 		opTable.put((byte) 0xD8, new Pair<Integer, OperatorTypeAll>(3,new RD()));
-		opTable.put((byte) 0x54, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x54, new Pair<Integer, OperatorTypeAll>(3,new STCH()));
 		opTable.put((byte) 0x2C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x10, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x38, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x10, new Pair<Integer, OperatorTypeAll>(3,new STX()));
+		opTable.put((byte) 0x38, new Pair<Integer, OperatorTypeAll>(3,new JLT()));
 		opTable.put((byte) 0x50, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0xDC, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x74, new Pair<Integer, OperatorTypeAll>(3,new LDT()));
 
 		opTable.put((byte) 0xB4, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));
 		opTable.put((byte) 0xA0, new Pair<Integer, OperatorTypeAll>(2,new COMPR()));
-		opTable.put((byte) 0xB8, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));
+		opTable.put((byte) 0xB8, new Pair<Integer, OperatorTypeAll>(2,new TIXR()));
 		
 	}
 

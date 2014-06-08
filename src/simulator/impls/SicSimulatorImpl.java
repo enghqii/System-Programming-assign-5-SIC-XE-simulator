@@ -20,27 +20,27 @@ public class SicSimulatorImpl implements SicSimulator {
 		opTable = new TreeMap<Byte, Pair<Integer, OperatorTypeAll>>();
 
 		opTable.put((byte) 0x14, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x48, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x48, new Pair<Integer, OperatorTypeAll>(3,new JSUB()));
 		opTable.put((byte) 0x00, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x28, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x30, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x30, new Pair<Integer, OperatorTypeAll>(3,new JEQ()));
 		opTable.put((byte) 0x3C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x0C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x08, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x4C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x04, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0xE0, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0xD8, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0xE0, new Pair<Integer, OperatorTypeAll>(3,new TD()));
+		opTable.put((byte) 0xD8, new Pair<Integer, OperatorTypeAll>(3,new RD()));
 		opTable.put((byte) 0x54, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x2C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x10, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x38, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x50, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0xDC, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x74, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x74, new Pair<Integer, OperatorTypeAll>(3,new LDT()));
 
 		opTable.put((byte) 0xB4, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));
-		opTable.put((byte) 0xA0, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));
+		opTable.put((byte) 0xA0, new Pair<Integer, OperatorTypeAll>(2,new COMPR()));
 		opTable.put((byte) 0xB8, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));
 		
 	}
@@ -51,7 +51,7 @@ public class SicSimulatorImpl implements SicSimulator {
 		
 		// set PC zero
 		//this.PC = 0;//0x1033;
-		rmgr.setRegister(8, 0x1033);
+		rmgr.setRegister(8, 0);
 		
 		rmgr.setRegister(2, -1); // LDL -1
 	}
@@ -75,9 +75,17 @@ public class SicSimulatorImpl implements SicSimulator {
 
 		// get full instruction
 		op = rmgr.getMemory(rmgr.getRegister(8), size);
+		{
+			// print it
+			for (byte b : op) {
+				System.out.print(String.format("%02X", b));
+			}
+
+			System.out.println("");
+		}
 		
 		// AND, go to next step - 이거 사이즈 계산 하고 나서 바로 해야하는거 아님?
-		//PC = PC + size;
+			// PC = PC + size;
 		rmgr.setRegister(8, rmgr.getRegister(8) + size);
 
 		// Do step
@@ -97,8 +105,9 @@ public class SicSimulatorImpl implements SicSimulator {
 			break;
 		}
 
+		case 4:
 		case 3: {
-			// get disp, nixvbpe.
+			// get disp, nixbpe.
 
 			NIXBPE nixbpe = new NIXBPE();
 
@@ -111,8 +120,19 @@ public class SicSimulatorImpl implements SicSimulator {
 			nixbpe.e = ((op[1] & 0x10) != 0 ? true : false);
 
 			int disp = 0;
-			disp |= ((op[1] & 0x0F) << 8);
-			disp |= ((op[2] & 0xFF) << 0);
+			
+			if(size == 3){
+				
+				disp |= ((op[1] & 0x0F) << 8);
+				disp |= ((op[2] & 0xFF) << 0);
+				
+			}else if(size == 4){
+
+				disp |= ((op[1] & 0x0F) << 8*2);
+				disp |= ((op[2] & 0xFF) << 8*1);
+				disp |= ((op[3] & 0xFF) << 8*0);
+				
+			}
 
 			// 이제 명령어랑 어드레싱 모드, 피연산자(disp)까지 얻음.
 
@@ -133,17 +153,7 @@ public class SicSimulatorImpl implements SicSimulator {
 
 			break;
 		}
-		case 4:
-			// get disp, nixbpe.
-			break;
 		}
-
-		// print it
-		for (byte b : op) {
-			System.out.print(String.format("%02X", b));
-		}
-
-		System.out.println("");
 	}
 
 	@Override

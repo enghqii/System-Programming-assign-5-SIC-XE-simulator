@@ -20,9 +20,9 @@ public class FileDevice implements Device {
 		file = new File(devName);
 		
 		try {
-			
-			input = new FileInputStream(file);
+
 			output = new FileOutputStream(file);
+			input = new FileInputStream(file);
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -34,6 +34,7 @@ public class FileDevice implements Device {
 		
 		try {
 			output.write(data);
+			output.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

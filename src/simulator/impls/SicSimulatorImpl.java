@@ -47,7 +47,9 @@ public class SicSimulatorImpl implements SicSimulator {
 	@Override
 	public void initialize(File objFile, ResourceManager rMgr) {
 		this.rmgr = rMgr;
-		this.PC = 0x1033;
+		this.PC = 0;//0x1033;
+		
+		rmgr.setRegister(2, -1); // LDL -1
 	}
 
 	@Override
@@ -70,15 +72,55 @@ public class SicSimulatorImpl implements SicSimulator {
 		// get full instruction
 		op = rmgr.getMemory(PC, size);
 		
-		
+		// Do step
+		switch(size){
+		case 1:
+			// do op
+			break;
+		case 2:
+			// get r1, r2
+			break;
+		case 3:
+			// get disp, nixvbpe.
+			
+			/*
+			int inst = 0;
+			
+			inst |= op[0] << 8 * 2;
+			inst |= op[1] << 8 * 1;
+			inst |= op[2] << 8 * 0;
+
+			System.out.println(String.format(">>%06X", inst));
+			*/
+
+			boolean n = ((op[0] & 0x02) != 0 ? true : false);
+			boolean i = ((op[0] & 0x01) != 0 ? true : false);
+
+			boolean x = ((op[1] & 0x80) != 0 ? true : false);
+			boolean b = ((op[1] & 0x40) != 0 ? true : false);
+			boolean p = ((op[1] & 0x20) != 0 ? true : false);
+			boolean e = ((op[1] & 0x10) != 0 ? true : false);
+
+			int disp = 0;
+			disp |= ((op[1] & 0x0F) << 8);
+			disp |= ((op[2] & 0xFF) << 0);
+			
+			// 이제 명령어랑 어드레싱 모드, 피연산자(disp)까지 얻음.
+
+			break;
+		case 4:
+			// get disp, nixbpe.
+			break;
+		}
+
 		// print it
-		for(byte b : op){
+		for (byte b : op) {
 			System.out.print(String.format("%02X", b));
 		}
-		
+
 		System.out.println("");
-		
-		// go to next step
+
+		// go to next step - 이거 사이즈 계산 하고 나서 바로 해야하는거 아님?
 		PC = PC + size;
 	}
 

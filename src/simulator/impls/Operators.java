@@ -62,6 +62,7 @@ class LDT implements OperatorType3 {
 	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
 			int targetAddr) {
 		
+		// imm, ind?
 		byte[] byteVal = rmgr.getMemory(targetAddr, 3);
 		int value = 0;
 
@@ -174,6 +175,167 @@ class RSUB implements OperatorType3{
 		rmgr.setRegister(8, retAddr);
 	}
 	
+}
+
+class LDA implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		
+		byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+		int value = 0;
+
+		value |= (byteVal[0] << 8*2);
+		value |= (byteVal[1] << 8*1);
+		value |= (byteVal[2] << 8*0);
+		
+		rmgr.setRegister(0, value);
+	}
+	
+}
+
+class COMP implements OperatorType3 {
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		int A = rmgr.getRegister(0);
+
+		byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+		int value = 0;
+
+		value |= (byteVal[0] << 8 * 2);
+		value |= (byteVal[1] << 8 * 1);
+		value |= (byteVal[2] << 8 * 0);
+
+		if (value == A) {
+			rmgr.setRegister(9, 0);
+		} else if (value < A) {
+			rmgr.setRegister(9, -1);
+		} else {
+			rmgr.setRegister(9, 1);
+		}
+	}
+
+}
+
+class J implements OperatorType3{
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		rmgr.setRegister(8, targetAddr);
+	}
+}
+
+class STA implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		
+		int val = rmgr.getRegister(0);
+		byte[] tmpArr = ByteBuffer.allocate(4).putInt(val).array();
+
+		// 상위 1바이트 절삭
+		byte[] valArr = new byte[3];
+		System.arraycopy(tmpArr, 1, valArr, 0, valArr.length);
+
+		rmgr.setMemory(targetAddr, valArr);
+	}
+}
+
+class LDL implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		
+		byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+		int value = 0;
+
+		value |= (byteVal[0] << 8*2);
+		value |= (byteVal[1] << 8*1);
+		value |= (byteVal[2] << 8*0);
+		
+		rmgr.setRegister(2, value);
+	}
+	
+}
+
+class LDX implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		
+		byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+		int value = 0;
+
+		value |= (byteVal[0] << 8*2);
+		value |= (byteVal[1] << 8*1);
+		value |= (byteVal[2] << 8*0);
+		
+		rmgr.setRegister(1, value);
+	}
+	
+}
+
+class TIX implements OperatorType3 {
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		// x = x + 1;
+		rmgr.setRegister(1, rmgr.getRegister(1) + 1);
+
+		byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+		int v1 = 0;
+
+		v1 |= (byteVal[0] << 8*2);
+		v1 |= (byteVal[1] << 8*1);
+		v1 |= (byteVal[2] << 8*0);
+		
+		int X = rmgr.getRegister(1);
+
+		if (X == v1) {
+			rmgr.setRegister(9, 0);
+		} else if (X < v1) {
+			rmgr.setRegister(9, -1);
+		} else {
+			rmgr.setRegister(9, +1);
+		}
+	}
+}
+
+class LDCH implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		byte ch = rmgr.getMemory(targetAddr, 1)[0];
+		
+		rmgr.setRegister(0, ch);
+	}
+	
+}
+
+class WD implements OperatorType3{
+
+	@Override
+	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
+			int targetAddr) {
+		// a에 있는걸 디바이스에게
+		
+		byte[] data = new byte[1]; 
+		data[0] = (byte) rmgr.getRegister(0);
+		
+		Byte dev = rmgr.getMemory(targetAddr, 1)[0];
+
+		//byte data = rmgr.readDevice(dev.toString(), 1)[0];
+		rmgr.writeDevice(dev.toString(), data);
+	}
+
 }
 
 class CLEAR implements OperatorType2 {

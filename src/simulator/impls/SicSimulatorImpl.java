@@ -21,22 +21,22 @@ public class SicSimulatorImpl implements SicSimulator {
 
 		opTable.put((byte) 0x14, new Pair<Integer, OperatorTypeAll>(3,new STL()));
 		opTable.put((byte) 0x48, new Pair<Integer, OperatorTypeAll>(3,new JSUB()));
-		opTable.put((byte) 0x00, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x28, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x00, new Pair<Integer, OperatorTypeAll>(3,new LDA()));
+		opTable.put((byte) 0x28, new Pair<Integer, OperatorTypeAll>(3,new COMP()));
 		opTable.put((byte) 0x30, new Pair<Integer, OperatorTypeAll>(3,new JEQ()));
-		opTable.put((byte) 0x3C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x0C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0x08, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x3C, new Pair<Integer, OperatorTypeAll>(3,new J()));
+		opTable.put((byte) 0x0C, new Pair<Integer, OperatorTypeAll>(3,new STA()));
+		opTable.put((byte) 0x08, new Pair<Integer, OperatorTypeAll>(3,new LDL()));
 		opTable.put((byte) 0x4C, new Pair<Integer, OperatorTypeAll>(3,new RSUB()));
-		opTable.put((byte) 0x04, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x04, new Pair<Integer, OperatorTypeAll>(3,new LDX()));
 		opTable.put((byte) 0xE0, new Pair<Integer, OperatorTypeAll>(3,new TD()));
 		opTable.put((byte) 0xD8, new Pair<Integer, OperatorTypeAll>(3,new RD()));
 		opTable.put((byte) 0x54, new Pair<Integer, OperatorTypeAll>(3,new STCH()));
-		opTable.put((byte) 0x2C, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x2C, new Pair<Integer, OperatorTypeAll>(3,new TIX()));
 		opTable.put((byte) 0x10, new Pair<Integer, OperatorTypeAll>(3,new STX()));
 		opTable.put((byte) 0x38, new Pair<Integer, OperatorTypeAll>(3,new JLT()));
-		opTable.put((byte) 0x50, new Pair<Integer, OperatorTypeAll>(3,new STL()));
-		opTable.put((byte) 0xDC, new Pair<Integer, OperatorTypeAll>(3,new STL()));
+		opTable.put((byte) 0x50, new Pair<Integer, OperatorTypeAll>(3,new LDCH()));
+		opTable.put((byte) 0xDC, new Pair<Integer, OperatorTypeAll>(3,new WD()));
 		opTable.put((byte) 0x74, new Pair<Integer, OperatorTypeAll>(3,new LDT()));
 
 		opTable.put((byte) 0xB4, new Pair<Integer, OperatorTypeAll>(2,new CLEAR()));

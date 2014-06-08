@@ -159,6 +159,19 @@ public class SicSimulatorImpl implements SicSimulator {
 			if (nixbpe.p) {
 				targetAddr += rmgr.getRegister(8);
 			}
+			
+			// indirect
+			if(nixbpe.n == true && nixbpe.i == false){
+				
+				byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+				int value = 0;
+
+				value |= (byteVal[0] << 8 * 2);
+				value |= (byteVal[1] << 8 * 1);
+				value |= (byteVal[2] << 8 * 0);
+				
+				targetAddr = value;
+			}
 
 			OperatorType3 operator = (OperatorType3) opTable.get(opcode).getSecond();
 			operator.operate(rmgr, nixbpe, disp, targetAddr);

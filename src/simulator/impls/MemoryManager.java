@@ -40,11 +40,14 @@ public class MemoryManager implements ResourceManager {
 
 	@Override
 	public void initialDevice(String devName) {
-		
-		Device dev = new FileDevice();
-		dev.initialize(devName);
-		
-		deviceMap.put(devName, dev);
+
+		if (deviceMap.containsKey(devName) == false) {
+
+			Device dev = new FileDevice();
+			dev.initialize(devName);
+
+			deviceMap.put(devName, dev);
+		}
 	}
 
 	@Override

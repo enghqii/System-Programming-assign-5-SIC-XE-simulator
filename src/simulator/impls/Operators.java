@@ -182,14 +182,23 @@ class LDA implements OperatorType3{
 	@Override
 	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
 			int targetAddr) {
-		
-		byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+
 		int value = 0;
 
-		value |= (byteVal[0] << 8*2);
-		value |= (byteVal[1] << 8*1);
-		value |= (byteVal[2] << 8*0);
-		
+		if (nixbpe.n == false && nixbpe.i == true) {
+			
+			value = targetAddr;
+
+		} else {
+
+			byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+			value = 0;
+
+			value |= (byteVal[0] << 8 * 2);
+			value |= (byteVal[1] << 8 * 1);
+			value |= (byteVal[2] << 8 * 0);
+		}
+
 		rmgr.setRegister(0, value);
 	}
 	
@@ -200,14 +209,23 @@ class COMP implements OperatorType3 {
 	@Override
 	public void operate(ResourceManager rmgr, NIXBPE nixbpe, int disp,
 			int targetAddr) {
+		
 		int A = rmgr.getRegister(0);
-
-		byte[] byteVal = rmgr.getMemory(targetAddr, 3);
 		int value = 0;
 
-		value |= (byteVal[0] << 8 * 2);
-		value |= (byteVal[1] << 8 * 1);
-		value |= (byteVal[2] << 8 * 0);
+		if (nixbpe.n == false && nixbpe.i == true) {
+
+			value = targetAddr;
+
+		} else {
+
+			byte[] byteVal = rmgr.getMemory(targetAddr, 3);
+			value = 0;
+
+			value |= (byteVal[0] << 8 * 2);
+			value |= (byteVal[1] << 8 * 1);
+			value |= (byteVal[2] << 8 * 0);
+		}
 
 		if (value == A) {
 			rmgr.setRegister(9, 0);

@@ -33,6 +33,7 @@ public class FileDevice implements Device {
 	public void write(byte[] data) {
 		
 		try {
+			char ch = (char) data[0];
 			output.write(data);
 			output.flush();
 		} catch (IOException e) {
@@ -51,6 +52,8 @@ public class FileDevice implements Device {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		char ch = (char) buffer[0];
 		
 		return buffer;
 	}

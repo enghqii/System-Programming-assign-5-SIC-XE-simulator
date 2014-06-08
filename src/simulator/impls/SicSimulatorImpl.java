@@ -118,9 +118,11 @@ public class SicSimulatorImpl implements SicSimulator {
 			nixbpe.b = ((op[1] & 0x40) != 0 ? true : false);
 			nixbpe.p = ((op[1] & 0x20) != 0 ? true : false);
 			nixbpe.e = ((op[1] & 0x10) != 0 ? true : false);
+			
+			// disp BEGIN TODO generalize
 
 			int disp = 0;
-			
+		
 			if(size == 3){
 				
 				disp |= ((op[1] & 0x0F) << 8);
@@ -133,6 +135,16 @@ public class SicSimulatorImpl implements SicSimulator {
 				disp |= ((op[3] & 0xFF) << 8*0);
 				
 			}
+			
+			if ((op[1] & 0x08) != 0) {
+				if(size == 3){
+					disp |= (0xFFFFF000);
+				}else if(size ==4){
+					disp |= (0xFFF00000);
+				}
+			}
+			
+			// disp END
 
 			// 이제 명령어랑 어드레싱 모드, 피연산자(disp)까지 얻음.
 

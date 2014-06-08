@@ -21,7 +21,7 @@ public class FileDevice implements Device {
 		
 		try {
 
-			output = new FileOutputStream(file);
+			output = new FileOutputStream(file, true);
 			input = new FileInputStream(file);
 			
 		} catch (FileNotFoundException e) {

@@ -213,9 +213,9 @@ class TIXR implements OperatorType2{
 		int v1 = rmgr.getRegister(r1);
 		int X = rmgr.getRegister(1);
 		
-		if (v1 == X) {
+		if (X == v1) {
 			rmgr.setRegister(9, 0);
-		} else if (v1 < X){
+		} else if (X < v1){
 			rmgr.setRegister(9, -1);
 		} else {
 			rmgr.setRegister(9, +1);
